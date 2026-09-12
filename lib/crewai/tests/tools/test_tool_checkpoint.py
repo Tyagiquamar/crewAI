@@ -22,14 +22,16 @@ def test_tool_checkpoint_json_serialization(tmp_path):
 
     agent = Agent(role="researcher", goal="research", backstory="backstory", tools=[echo_tool])
     task = Task(description="task desc", expected_output="output", agent=agent)
-    crew = Crew(agents=[agent], tasks=[task])
-    state = RuntimeState([crew])
 
-    cfg = CheckpointConfig(location=str(tmp_path))
-    with warnings.catch_warnings(record=True) as caught, patch(
-        "crewai.state.checkpoint_listener.crewai_event_bus.emit"
-    ):
-        warnings.simplefilter("always")
-        _do_checkpoint(state, cfg, event=None)
+    with patch("crewai.state.runtime.KickoffTaskOutputsSQLiteStorage"):
+        crew = Crew(agents=[agent], tasks=[task])
+        state = RuntimeState([crew])
+
+        cfg = CheckpointConfig(location=str(tmp_path))
+        with warnings.catch_warnings(record=True) as caught, patch(
+            "crewai.state.checkpoint_listener.crewai_event_bus.emit"
+        ):
+            warnings.simplefilter("always")
+            _do_checkpoint(state, cfg, event=None)
 
     assert any("Tool func" in str(w.message) or "guardrail" in str(w.message).lower() for w in caught)
