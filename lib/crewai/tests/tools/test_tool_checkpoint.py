@@ -16,6 +16,7 @@ def sample_top_level_tool_func(text: str) -> str:
 def test_tool_checkpoint_json_serialization(tmp_path):
     @tool_decorator("echo_tool")
     def echo_tool(text: str) -> str:
+        """Echo the input text."""
         return text
 
     agent = Agent(role="researcher", goal="research", backstory="backstory", tools=[echo_tool])
@@ -28,5 +29,4 @@ def test_tool_checkpoint_json_serialization(tmp_path):
         warnings.simplefilter("always")
         _do_checkpoint(state, cfg, event=None)
 
-    # Should checkpoint cleanly without raising an exception
     assert any("Tool func" in str(w.message) or "guardrail" in str(w.message).lower() for w in caught)
