@@ -23,7 +23,7 @@ def test_tool_checkpoint_json_serialization(tmp_path):
     agent = Agent(role="researcher", goal="research", backstory="backstory", tools=[echo_tool])
     task = Task(description="task desc", expected_output="output", agent=agent)
 
-    with patch("crewai.memory.storage.kickoff_task_outputs_storage.KickoffTaskOutputsSQLiteStorage"):
+    with patch("crewai.utilities.task_output_storage_handler.KickoffTaskOutputsSQLiteStorage"):
         crew = Crew(agents=[agent], tasks=[task])
         state = RuntimeState([crew])
 
