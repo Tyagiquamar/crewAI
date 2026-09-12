@@ -1,4 +1,5 @@
 from typing import Any
+from unittest.mock import patch
 import warnings
 
 from crewai import Agent, Crew, Task
@@ -25,7 +26,9 @@ def test_tool_checkpoint_json_serialization(tmp_path):
     state = RuntimeState([crew])
 
     cfg = CheckpointConfig(location=str(tmp_path))
-    with warnings.catch_warnings(record=True) as caught:
+    with warnings.catch_warnings(record=True) as caught, patch(
+        "crewai.state.checkpoint_listener.crewai_event_bus.emit"
+    ):
         warnings.simplefilter("always")
         _do_checkpoint(state, cfg, event=None)
 
